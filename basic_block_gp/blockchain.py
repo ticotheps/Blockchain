@@ -84,7 +84,12 @@ class Blockchain(object):
         - p is the previous proof, and p' is the new proof
         """
 
-        pass
+        proof = 0
+        # Loops through numbers until we find one that works
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+        # When a proof works, return it 
+        return proof
 
     @staticmethod
     def valid_proof(last_proof, proof):
@@ -92,8 +97,11 @@ class Blockchain(object):
         Validates the Proof:  Does hash(last_proof, proof) contain 4
         leading zeroes?
         """
-        # TODO
-        pass
+        # guess = last_proof + proof
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        # Returns first four elements of the array
+        return guess_hash[:4] == "0000"
 
     def valid_chain(self, chain):
         """
@@ -181,7 +189,7 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # Create the Genesis Block
+        # Creates a 'blockchain' instance of Blockchain() class
         'currentChain': blockchain.chain,
         'length': len(blockchain.chain)
     }
