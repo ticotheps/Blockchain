@@ -93,7 +93,7 @@ class Blockchain(object):
     @staticmethod
     def valid_proof(last_proof, proof):
         """
-        Validates the Proof:  Does hash(last_proof, proof) contain 4
+        Validates the Proof:  Does hash(last_proof, proof) contain 6
         leading zeroes?
         """
         guess = f'{last_proof}{proof}'.encode()
@@ -149,8 +149,8 @@ def mine():
     # We must receive a reward for finding the proof.
     # The sender is "0" to signify that this node has mine a new coin
     blockchain.new_transaction(
-        sender="0",
-        recipient=node_identifier,
+        recipient="0",
+        sender=node_identifier,
         amount=1,
     )
 
