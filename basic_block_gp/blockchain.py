@@ -10,9 +10,9 @@ class Blockchain(object):
     def __init__(self):
         self.chain = []
         self.current_transactions = []
-        self.nodes = set()
+        self.nodes = set()  # Other servers running the same blockchain
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99)  # Creates the Genesis block
 
     def new_block(self, proof, previous_hash=None):
         """
