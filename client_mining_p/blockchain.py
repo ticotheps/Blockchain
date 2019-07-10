@@ -147,7 +147,7 @@ def mine():
     
     proof = 0
     while blockchain.valid_proof(last_proof, proof) is False:
-        print("failure")
+        print(f'failure: {proof}')
         proof += 1
 
     print("success")
