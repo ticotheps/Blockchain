@@ -47,6 +47,7 @@ class Blockchain(object):
         :return: <int> The index of the BLock that will hold this transaction
         """
 
+        # Adds a new transaction to the list of transactions
         self.current_transactions.append({
             'sender': sender,
             'recipient': recipient,
@@ -70,6 +71,7 @@ class Blockchain(object):
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
+    # This decorator allows you access methods within the same property
     @property
     def last_block(self):
         return self.chain[-1]
@@ -179,7 +181,9 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        # Create the Genesis Block
+        'currentChain': blockchain.chain,
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
