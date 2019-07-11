@@ -216,9 +216,9 @@ def mine():
         amount=1,
     )
 
-    # Forge the new BLock by adding it to the chain
+    # Forge the new Block by adding it to the chain
     previous_hash = blockchain.hash(last_block)
-    block = blockchain.new_block(submitted_proof, previous_hash)
+    block = blockchain.new_block(values['proof'], previous_hash)
 
     response = {
         'message': "New Block Forged",
