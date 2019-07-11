@@ -15,6 +15,7 @@ def proof_of_work(last_proof):
     print("Searching for next proof")
     proof = 0
     while valid_proof(last_proof, proof) is False:
+        print(proof)
         proof += 1
 
     print("Proof found: " + str(proof))
