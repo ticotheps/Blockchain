@@ -330,10 +330,17 @@ def new_block():
     # Validate that the block
     
     # Make sure that index is EXACTLY +1 compared to last block
+    new_block = values['block']
+    last_block = blockchain.last_block
     
-    # Make sure the block's last hash matches OUR hash of our last block
-    
-    # Validate the proof in the new block
+    if new_block['index'] == last_block['index'] + 1:
+        # Make sure the block's last hash matches OUR hash of our last block
+        if new_block['previous_hash'] == blockchain.hash(last_block):
+            # Validate the proof in the new block
+            if blockchain.valid_proof(last_block['proof'], new_block['proof']):
+                # The block is good! Add it to the chain.
+                blockchain.chain.append(new_block)
+                
 
 
 @app.route('/nodes/resolve', methods=['GET'])
