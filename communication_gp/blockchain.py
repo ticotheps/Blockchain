@@ -340,6 +340,11 @@ def new_block():
             if blockchain.valid_proof(last_block['proof'], new_block['proof']):
                 # The block is good! Add it to the chain.
                 blockchain.chain.append(new_block)
+                return 'Block accepted', 200
+    
+    # TODO: print error message
+    # TODO: request the chain from our peers and check for consenus
+    return 'Block rejected', 200
                 
 
 
