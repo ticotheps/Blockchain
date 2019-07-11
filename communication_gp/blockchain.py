@@ -316,6 +316,25 @@ def register_nodes():
     }
     return jsonify(response), 201
 
+@app.route('/block/new', methods=['POST'])
+def new_block():
+    values = request.get_json()
+
+    # Check that the required fields are in the POST'ed data
+    required = ['block']
+    if not all(k in values for k in required):
+        return 'Missing Values', 400
+    
+    # TODO: Validate that sender is actually an approved peer node
+
+    # Validate that the block
+    
+    # Make sure that index is EXACTLY +1 compared to last block
+    
+    # Make sure the block's last hash matches OUR hash of our last block
+    
+    # Validate the proof in the new block
+
 
 @app.route('/nodes/resolve', methods=['GET'])
 def consensus():
