@@ -194,8 +194,24 @@ class Blockchain(object):
             return True
 
         return False
+    
+    def broadcast_new_block(self, block):
+        """
+        Alert neighbors in list of nodes that a new block has been mined
+        :param block: <Block> the block that has been mined and added
+        to the chain.
+        """
 
+        post_data = {"block": block}
+        
+        for node in self.nodes:
+            r = requests.post(f'http://{node}/block/new', json=post_data)
 
+            if r.status_code != 200:
+                # TODO: Error handling
+                pass
+            
+            
 # Instantiate our Node
 app = Flask(__name__)
 
