@@ -15,7 +15,6 @@ def proof_of_work(last_proof):
     print("Searching for next proof")
     proof = 0
     while valid_proof(last_proof, proof) is False:
-        print(proof)
         proof += 1
 
     print("Proof found: " + str(proof))
@@ -45,14 +44,15 @@ if __name__ == '__main__':
         # Get the last proof from the server
         r = requests.get(url=node + "/last_proof")
         data = r.json()
-        new_proof = proof_of_work(data.get('proof'))
+        last_proof = data['last_proof']
+        
+        new_proof = proof_of_work(last_proof)
 
-        post_data = {"proof": new_proof}
+        # Creates a JSON object to send to the server
+        proof_data = {"proof": new_proof}
 
-        r = requests.post(url=node + "/mine", json=post_data)
-        data = r.json()
-        if data.get('message') == 'New Block Forged':
+        r = requests.post(url=node + "/mine", json=proof_data)
+        print(r.json()['message'])
+        if r.json()['message'] == 'New Block Forged':
             coins_mined += 1
-            print("Total coins mined: " + str(coins_mined))
-        else:
-            print(data.get('message'))
+            print("Coins mined: ", coins_mined)
