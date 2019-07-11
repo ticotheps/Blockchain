@@ -186,42 +186,48 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
+# Change the method to accept a POST request
 @app.route('/mine', methods=['POST'])
 def mine():
     # Determine if proof is valid
     last_block = blockchain.last_block
     last_proof = last_block['proof']
+    # Get rid of line below b/c 'proof_of_work' was commented out above
+    # proof = blockchain.proof_of_work(last_proof)
 
     values = request.get_json()
-    submitted_proof = values.get('proof')
+    
+    # Check that the required fields are in the POST'ed data
+    required = ['proof']
+    if not all(k in values for k in required):
+        return 'Missing Values', 400
 
-    if blockchain.valid_proof(last_proof, submitted_proof):
-        # We must receive a reward for finding the proof.
-        # The sender is "0" to signify that this node has mine a new coin
-        blockchain.new_transaction(
-            sender="0",
-            recipient=node_identifier,
-            amount=1,
-        )
-
-        # Forge the new BLock by adding it to the chain
-        previous_hash = blockchain.hash(last_block)
-        block = blockchain.new_block(submitted_proof, previous_hash)
-
+    if not blockchain.valid_proof(last_proof, values['proof']):
         response = {
-            'message': "New Block Forged",
-            'index': block['index'],
-            'transactions': block['transactions'],
-            'proof': block['proof'],
-            'previous_hash': block['previous_hash'],
+            'message': 'Proof is invalid or already submitted'
         }
         return jsonify(response), 200
-    else:
-        response = {
-            'message': "Proof was invalid or already submitted."
-        }
-        return jsonify(response), 200
+        
+    # We must receive a reward for finding the proof.
+    # The sender is "0" to signify that this node has mine a new coin
+    blockchain.new_transaction(
+        sender="0",
+        recipient=node_identifier,
+        amount=1,
+    )
 
+    # Forge the new BLock by adding it to the chain
+    previous_hash = blockchain.hash(last_block)
+    block = blockchain.new_block(submitted_proof, previous_hash)
+
+    response = {
+        'message': "New Block Forged",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    return jsonify(response), 200
 
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
