@@ -78,19 +78,19 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, last_proof):
-        """
-        Simple Proof of Work Algorithm
-        - Find a number p' such that hash(pp') contains 6 leading
-        zeroes, where p is the previous p'
-        - p is the previous proof, and p' is the new proof
-        """
+    # def proof_of_work(self, last_proof):
+    #     """
+    #     Simple Proof of Work Algorithm
+    #     - Find a number p' such that hash(pp') contains 6 leading
+    #     zeroes, where p is the previous p'
+    #     - p is the previous proof, and p' is the new proof
+    #     """
 
-        proof = 0
-        while self.valid_proof(last_proof, proof) is False:
-            proof += 1
+    #     proof = 0
+    #     while self.valid_proof(last_proof, proof) is False:
+    #         proof += 1
 
-        return proof
+    #     return proof
 
     @staticmethod
     def valid_proof(last_proof, proof):
@@ -249,7 +249,7 @@ def full_chain():
     }
     return jsonify(response), 200
 
-
+# Endpoint that returns proof of the last block
 @app.route('/last_proof', methods=['GET'])
 def last_proof():
     last_proof_value = blockchain.last_block.get('proof')
@@ -258,51 +258,11 @@ def last_proof():
     }
     return jsonify(response), 200
 
-
-# Post body as JSON to add node
-# {
-# 	"nodes": ["http://localhost:5001"]
-# }
-@app.route('/nodes/register', methods=['POST'])
-def register_nodes():
-
-    values = request.get_json()
-    nodes = values.get('nodes')
-    if nodes is None:
-        return "Error: Please supply a valid list of nodes", 400
-
-    for node in nodes:
-        blockchain.register_node(node)
-
-    response = {
-        'message': 'New nodes have been added',
-        'total_nodes': list(blockchain.nodes),
-    }
-    return jsonify(response), 201
-
-
-@app.route('/nodes/resolve', methods=['GET'])
-def consensus():
-    replaced = blockchain.resolve_conflicts()
-
-    if replaced:
-        response = {
-            'message': 'Our chain was replaced',
-            'new_chain': blockchain.chain
-        }
-    else:
-        response = {
-            'message': 'Our chain is authoritative',
-            'chain': blockchain.chain
-        }
-
-    return jsonify(response), 200
-
-
 # Note, when demoing, start with this, then change to the below
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=5000)
 
+# Python interpreter reads this source file and runs it.
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
