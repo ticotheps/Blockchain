@@ -10,9 +10,9 @@ class Blockchain(object):
     def __init__(self):
         self.chain = []
         self.current_transactions = []
-        self.nodes = set()
+        self.nodes = set()  # Other servers running the same blockchain
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99)  # Creates the Genesis block
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -47,6 +47,7 @@ class Blockchain(object):
         :return: <int> The index of the BLock that will hold this transaction
         """
 
+        # Adds a new transaction to the list of transactions
         self.current_transactions.append({
             'sender': sender,
             'recipient': recipient,
@@ -70,6 +71,7 @@ class Blockchain(object):
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
+    # This decorator allows you access methods within the same property
     @property
     def last_block(self):
         return self.chain[-1]
@@ -82,7 +84,12 @@ class Blockchain(object):
         - p is the previous proof, and p' is the new proof
         """
 
-        pass
+        proof = 0
+        # Loops through numbers until we find one that works
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+        # When a proof works, return it 
+        return proof
 
     @staticmethod
     def valid_proof(last_proof, proof):
@@ -90,8 +97,11 @@ class Blockchain(object):
         Validates the Proof:  Does hash(last_proof, proof) contain 4
         leading zeroes?
         """
-        # TODO
-        pass
+        # guess = last_proof + proof
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        # Returns first four elements of the array
+        return guess_hash[:4] == "0000"
 
     def valid_chain(self, chain):
         """
@@ -139,13 +149,15 @@ def mine():
     proof = blockchain.proof_of_work(last_proof)
 
     # We must receive a reward for finding the proof.
-    # TODO:
-    # The sender is "0" to signify that this node has mine a new coin
+    blockchain.new_transaction(0, node_identifier, 1)
+    # The sender is "0" to signify that this node has mined a new coin
     # The recipient is the current node, it did the mining!
+    #     -recipient = "node_identifier"
     # The amount is 1 coin as a reward for mining the next block
 
     # Forge the new Block by adding it to the chain
-    # TODO
+    # Also gives us a copy of the new blockchain
+    block = blockchain.new_block(proof, blockchain.hash(last_block))
 
     # Send a response with the new block
     response = {
@@ -154,6 +166,8 @@ def mine():
         'transactions': block['transactions'],
         'proof': block['proof'],
         'previous_hash': block['previous_hash'],
+        
+        'proof': proof
     }
     return jsonify(response), 200
 
@@ -179,7 +193,9 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        # Creates a 'blockchain' instance of Blockchain() class
+        'currentChain': blockchain.chain,
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 

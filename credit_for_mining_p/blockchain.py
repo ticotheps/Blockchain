@@ -55,6 +55,7 @@ class Blockchain(object):
             'transactions': self.current_transactions,
             'proof': proof,
             'previous_hash': previous_hash,
+            'anything': "thongs (sandals)"
         }
 
         # Reset the current list of transactions
@@ -249,12 +250,13 @@ def mine():
 
     values = request.get_json()
     submitted_proof = values.get('proof')
+    id = values.get("id")
 
     if blockchain.valid_proof(last_proof, submitted_proof):
         # We must receive a reward for finding the proof.
-        # The sender is "0" to signify that this node has mine a new coin
+        # The sender is "0" to signify that this node has mined a new coin
         blockchain.new_transaction(
-            sender="0",
+            sender=id,
             recipient=node_identifier,
             amount=1,
         )
@@ -273,6 +275,7 @@ def mine():
             'transactions': block['transactions'],
             'proof': block['proof'],
             'previous_hash': block['previous_hash'],
+            'sender': id
         }
         return jsonify(response), 200
     else:
